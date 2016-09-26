@@ -17,9 +17,9 @@ class MultilabelSoftmaxWithLossLayer(caffe.Layer):
         probs = np.zeros_like(bottom[0].data)
         labelsets = [np.unique(bottom[1].data[:,c,:,:]).astype(int).tolist() 
         	for c in range(bottom[1].channels)]
-        z = np.exp(bottom[0].data)
+        ez = np.exp(bottom[0].data)
         for l in labelsets:
-            probs[:,l,:,:] = z[:,l,:,:]/np.sum(z[:,l,:,:], axis=1, keepdims=True)
+            probs[:,l,:,:] = ez[:,l,:,:]/np.sum(ez[:,l,:,:], axis=1, keepdims=True)
             top[0].data[1,:,1,1] = -(1/bottom[0].num)*np.sum(np.log(probs[:,l,:,:]))
         self.diff[...] = probs
 
