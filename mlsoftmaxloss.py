@@ -15,12 +15,11 @@ class MultilabelSoftmaxLossLayer(caffe.Layer):
 
     def forward(self, bottom, top):	
         probs = np.zeros_like(bottom[0].data)
-        L = [np.unique(bottom[1].data[:,lm,:,:]).astype(int).tolist() 
-        	for lm in range(bottom[1].channels)]
-        numer = np.exp(bottom[0].data)
-        for l in L:
-            denom = np.sum(numer[:,l,:,:], axis=1, keepdims=True)
-            probs[:,l,:,:] = numer[:,l,:,:]/denom
+        labelsets = [np.unique(bottom[1].data[:,c,:,:]).astype(int).tolist() 
+        	for c in range(bottom[1].channels)]
+        z = np.exp(bottom[0].data)
+        for l in labelsets:
+            probs[:,l,:,:] = z[:,l,:,:]/np.sum(z[:,l,:,:], axis=1, keepdims=True)
             top[0].data[1,:,1,1] = -(1/bottom[0].num)*np.sum(np.log(probs[:,l,:,:]))
         self.diff[...] = probs
 
