@@ -2,7 +2,7 @@ import caffe
 import numpy as np
 
         
-class MultilabelSoftmaxLossLayer(caffe.Layer):
+class MultilabelSoftmaxWithLossLayer(caffe.Layer):
 
     def setup(self, bottom, top):
         if len(bottom) != 2:
