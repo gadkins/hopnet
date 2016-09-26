@@ -1,5 +1,5 @@
 # HOPNet
-Deep Multilabel FCN for Hierarchical Object Parsing
+<strong>Deep Multilabel FCN for Hierarchical Object Parsing</strong>
 
 HOPNet is a deep fully convolutional network (FCN) modified for multiclass-multilabel problems. It utilizes the Caffe deep learning framework and is particularly well-suited for parsing objects into prediction map hierarchies.   
 
