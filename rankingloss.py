@@ -15,21 +15,31 @@ class RankingLossLayer(caffe.Layer):
         top[0].reshape(1)
 
     def forward(self, bottom, top):
-	labelsets = tuple(np.unique(bottom[1].data[:,c,:,:]).astype(int).tolist() 
-            for c in range(bottom[1].channels))
-        # given label, returns the index of the labelset to which it belongs
-        def labelset_idx(label)
+	labelsets = tuple(tuple(np.unique(bottom[1].data[:,c,:,:]).astype(int)
+            for c in range(bottom[1].channels)))
+        # Given label, returns the index of the labelset to which it belongs
+        def labelset_idx(label):
             return next((i for i, sub in enumerate(labelsets) if label in sub), -1)
-        # given a labelset index, returns a list of nonparent labels excluding itself
-        def get_nonparents(idx)
-            non = [item for sublist in labelsets[idx:] for item in sublist]
-            return non.remove(label)
-        gts = bottom[1].data
-        parents =
+        # Given a labelset index, returns a list of nonparent labels including itself
+        def nonparent_labels(idx):
+            return [item for sublist in labelsets[idx:] for item in sublist]
+            #return non.remove(label)
+        def parent_labels(idx):
         loss = 0 
-        for i,label in enumerate(gts):
-            nonparents = get_nonparents(i)
-            loss += max(0, 1 - bottom[0].data[:,label,:,:] + np.sum(bottom[0].data[:,nonparents,:,:]))
+        
+        for i, ls in enumerate(labelsets):
+            nonparents = nonparent_labels(i)
+            for label in ls:
+                nonparents.remove(label)
+                if not nonparents:
+                    continue
+                # Case 1: label k does not belong to set of parents of label j
+                loss += max(0, 1 - bottom[0].data[:,label,:,:] + np.sum(bottom[0].data[:,nonparents,:,:])
+                nonparents.add(label)
+                # Case 2: label k does belong to set of parents of label j
+                loss + = max(0, 1 - np.sum(bottom[0].data[:,parents,:,:]) + bottom[0].data[:,label,:,:]
+        
+        
 
     def backward (self, top, propagate_down, bottom):
         for i in range(2):
