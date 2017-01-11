@@ -1,5 +1,6 @@
 import caffe
 import numpy as np
+from parents import get_parents
 
 class RankingLossLayer(caffe.Layer):
 
@@ -15,54 +16,49 @@ class RankingLossLayer(caffe.Layer):
         top[0].reshape(1)
 
     def forward(self, bottom, top):
-	labelsets = tuple(tuple(np.unique(bottom[1].data[:,c,:,:]).astype(int)
-            for c in range(bottom[1].channels)))
-        # Given label, returns the index of the labelset to which it belongs
-        def labelset_idx(label):
-            return next((i for i, sub in enumerate(labelsets) if label in sub), -1)
-        # Given a labelset index, returns a list of nonparent labels including itself
-        def nonparent_labels(idx):
-            return [item for sublist in labelsets[idx:] for item in sublist]
-        loss = 0 
-#       for each labelmap
-#           for each label
-#               (1) find indices in labelmap matching that label (e.g. all "background" indices)
-#               (2) go to prediction's label page and get activation values at those indices ( fj(xi) )
-#               (3) get activation values at those same indices at the nonparent pages ( fk(xi) )
-#               (4) get activation values at those indices at the parent pages
+        L = np.unique(bottom[1].data).astype(int)
+        Y = bottom[1].data
+        scores = bottom[0].data
+        loss = 0.0
+    	#for each label
+            #(1) in bottom[1], find indices matching label y (e.g. all "background" indices)
+            #(2) in bottom[0] on label page y, get scores at those indices (s_y)
+            #(4) get scores s_j at those indices on parent pages (J)
+            #(3) get scores s_k at those indices on nonparent pages (K)
+        self.missed_margins = np.zeros_like(bottom[0].data)
+		for y in L:
+			_,_,r,c = np.where(Y == y)
+			s_y = scores[:,y,r,c]
+			s_y = s_y[np.newaxis,...]
+			J = get_parents(tree, y)
+			if J:
+				s_j = scores[:,J,:,:]
+				s_j = s_j[:,:,r,c]
+				loss_j = np.maximum(0, 1 - s_j + s_y)
+				loss += np.sum(loss_j)
+				# parent classes promoted with extra negative gradient
+				self.missed_margins[:,y,r,c] += -(loss_j > 0).astype(int).sum(1)
+			K = list(set(L) - set(J) - set([y]))
+			if K:
+				s_k = scores[:,K,:,:]
+				s_k = s_k[:,:,r,c]
+				loss_k = np.maximum(0, 1 - s_y + s_k)
+				loss += np.sum(loss_k)
+				self.missed_margins[:,y,r,c] += -(loss_k > 0).astype(int).sum(1) # true class gradients
+				for idx,k in enumerate(K):
+					self.missed_margins[:,k,r,c] += (loss_k[:,idx,:] > 0).astype(int) # other gradients
 
-        for i, ls in enumerate(labelsets):
-            nonparents = nonparent_labels(i)
-            for label in ls:
-                nonparents.remove(label)
-                if not nonparents:
-                    continue
-                # (1) Find indices matching label
-                indices = np.where(bottom[1].data == label)
-                # need to get indices in the form of [(n,c,h,w), (n,c,h,w),...] instead of (array([n,n]), array([c,c]), array([h,h]),...
-                indices = (i[0] for i in indices] # needs work
-                indices = tuple(item for sub in indices for item in sub)
-                # (2) Case 1: label k does not belong to set of parents of label j
-                loss += max(0, 1 - bottom[0].data[:,label,:,:] + np.sum(bottom[0].data[:,nonparents,:,:])
-                nonparents.add(label)
-                # Case 2: label k does belong to set of parents of label j
-                parents = list(set(labelsets) - set(nonparents))
-                loss + = max(0, 1 - np.sum(bottom[0].data[:,parents,:,:]) + bottom[0].data[:,label,:,:])
-        n,c,h,w = bottom[0].data.shape
-        rank = np.argsort(bottom[0].data, axis=1)
-        ranks = [np.where(rank == r)[1].reshape(n,1,h,w) for r in range(3)] # 3 label maps
-        self.diff[...] = 
         top[0].data[...] = loss
         
 
     def backward (self, top, propagate_down, bottom):
+        # grad = {    0   if y*np.dot(w,x) >= 1
+        #          -y*x   else   } 
+        # where x is element of inputs X and y is element of labels Y
+        # here Y = bottom[0].data and X = self.inputs
         for i in range(2):
             if not propagate_down[i]:
                 continue
-            if i == 0:
-                sign = 1
-            else:
-                sign = -1
-            bottom[i].diff[...] = sign * self.diff / bottom[i].num
-
+            self.missed_margins[self.missed_margins > 0] = 0
+            bottom[i].diff[...] = bottom[0].data * self.missed_margins
 
