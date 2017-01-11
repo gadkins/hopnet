@@ -21,11 +21,13 @@ class RankingLossLayer(caffe.Layer):
         scores = bottom[0].data
         self.missed_margins = np.zeros_like(bottom[0].data)
         loss = 0.0
-    	#for each label
-            #(1) in bottom[1], find indices matching label y (e.g. all "background" indices)
-            #(2) in bottom[0] on label page y, get scores at those indices (s_y)
-            #(4) get scores s_j at those indices on parent pages (J)
-            #(3) get scores s_k at those indices on nonparent pages (K)
+        """
+    	foreach label
+            (1) in bottom[1], find indices matching label y (e.g. all "background" indices)
+            (2) in bottom[0], on label page y, get scores at those indices (s_y)
+            (4) get scores s_j at those indices on parent pages (J)
+            (3) get scores s_k at those indices on nonparent pages (K)
+		"""
 		for y in L:
 			_,_,r,c = np.where(Y == y)
 			s_y = scores[:,y,r,c]
