@@ -21,27 +21,27 @@ class RankingLossLayer(caffe.Layer):
         scores = bottom[0].data
         self.missed_margins = np.zeros_like(bottom[0].data)
         loss = 0.0
-		for y in L:
-			_,_,r,c = np.where(Y == y)
-			s_y = scores[:,y,r,c]
-			s_y = s_y[np.newaxis,...]
-			J = get_parents(tree, y)
-			if J:
-				s_j = scores[:,J,:,:]
-				s_j = s_j[:,:,r,c]
-				loss_j = np.maximum(0, 1 - s_j + s_y)
-				loss += np.sum(loss_j)
-				# parent classes promoted with extra negative gradient
-				self.missed_margins[:,y,r,c] += -(loss_j > 0).astype(int).sum(1)
-			K = list(set(L) - set(J) - set([y]))
-			if K:
-				s_k = scores[:,K,:,:]
-				s_k = s_k[:,:,r,c]
-				loss_k = np.maximum(0, 1 - s_y + s_k)
-				loss += np.sum(loss_k)
-				self.missed_margins[:,y,r,c] += -(loss_k > 0).astype(int).sum(1) # true class gradients
-				for idx,k in enumerate(K):
-					self.missed_margins[:,k,r,c] += (loss_k[:,idx,:] > 0).astype(int) # other gradients
+        for y in L:
+            _,_,r,c = np.where(Y == y)
+            s_y = scores[:,y,r,c]
+            s_y = s_y[np.newaxis,...]
+            J = get_parents(tree, y)
+            if J:
+                s_j = scores[:,J,:,:]
+                s_j = s_j[:,:,r,c]
+                loss_j = np.maximum(0, 1 - s_j + s_y)
+                loss += np.sum(loss_j)
+                # parent classes promoted with extra negative gradient
+                self.missed_margins[:,y,r,c] += -(loss_j > 0).astype(int).sum(1)
+            K = list(set(L) - set(J) - set([y]))
+            if K:
+                s_k = scores[:,K,:,:]
+                s_k = s_k[:,:,r,c]
+                loss_k = np.maximum(0, 1 - s_y + s_k)
+                loss += np.sum(loss_k)
+                self.missed_margins[:,y,r,c] += -(loss_k > 0).astype(int).sum(1) # true class gradients
+                for idx,k in enumerate(K):
+                    self.missed_margins[:,k,r,c] += (loss_k[:,idx,:] > 0).astype(int) # other gradients
 
         top[0].data[...] = loss
         
