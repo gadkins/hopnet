@@ -21,7 +21,6 @@ class RankingLossLayer(caffe.Layer):
         scores = bottom[0].data
         self.missed_margins = np.zeros_like(bottom[0].data)
         loss = 0.0
-
     	#for each label
             #(1) in bottom[1], find indices matching label y (e.g. all "background" indices)
             #(2) in bottom[0] on label page y, get scores at those indices (s_y)
@@ -53,10 +52,6 @@ class RankingLossLayer(caffe.Layer):
         
 
     def backward (self, top, propagate_down, bottom):
-        # grad = {    0   if y*np.dot(w,x) >= 1
-        #          -y*x   else   } 
-        # where x is element of inputs X and y is element of labels Y
-        # here Y = bottom[0].data and X = self.inputs
         for i in range(2):
             if not propagate_down[i]:
                 continue
