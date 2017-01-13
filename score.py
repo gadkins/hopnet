@@ -54,7 +54,7 @@ def do_seg_tests(net, iter, rank_format, dataset, layer, gts, n_cls):
 		rank_format = rank_format.format(iter)
 	hists, loss = compute_hist(net, rank_format, dataset, layer, gts, n_cls)
 	# Calculate metrics
-	tp = fn = fp = acc = meanacc = iu = freq = prec = recall = 0
+	tp = fn = fp = acc = iu = freq = prec = recall = 0
 	for i, hist in enumerate(hists):
 		# mean loss
 		print '>>>', datetime.now(), 'Iteration', iter, 'loss', loss
@@ -74,7 +74,7 @@ def do_seg_tests(net, iter, rank_format, dataset, layer, gts, n_cls):
 		freq = hist.sum(1) / hist.sum()
 		print '>>>', datetime.now(), 'Iteration', iter, 'fwavacc label{}'.format(i), \
 			  (freq[freq > 0] * iu[freq > 0]).sum()
-		# precision (per class)
+		# precision
 		prec = tp / (tp + fp)
 		print '>>>', datetime.now(), 'Iteration', iter, 'mean precision label{}'.format(i), \
 			  np.nanmean(prec)
