@@ -49,7 +49,7 @@ def seg_tests(solver, rank_format, dataset, layer, gts, n_cls):
 	solver.test_nets[0].share_with(solver.net)
 	do_seg_tests(solver.test_nets[0], solver.iter, sm_format, rank_format, dataset, layer, gts)
 
-def do_seg_tests(net, iter, rank_format, dataset, layer, gts=, n_cls):
+def do_seg_tests(net, iter, rank_format, dataset, layer, gts, n_cls):
 	if rank_format:
 		rank_format = rank_format.format(iter)
 	hists, loss = compute_hist(net, rank_format, dataset, layer, gts, n_cls)
