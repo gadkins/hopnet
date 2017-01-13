@@ -1,7 +1,7 @@
 """ Returns the parent nodes of a dict-based general tree with
     root -1 and leaves None  
     Example: tree = {-1: {0: {2: {6: None}},
-					      1: {3: {7: None,
+						  1: {3: {7: None,
 								  8: None,
 								  9: None,
 								  10: None,
