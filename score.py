@@ -23,7 +23,7 @@ def compute_hist(net, rank_dir, dataset, layer='score', gts=['label'], n_cls=[2,
 	for idx in dataset:
 		net.forward()
 		if rank_dir:
-			#find top-k ranks
+			# find top-k ranks
 			ranks = collect_ranks(net.blobs[layer].data)
 			# compute histogram
 			for k,v in enumerate(n_cls):
@@ -43,7 +43,6 @@ def compute_hist(net, rank_dir, dataset, layer='score', gts=['label'], n_cls=[2,
 def collect_ranks(prediction):
 	rank = np.argsort(prediction, axis=1)[:,::-1,:,:] # highest to lowest
 	return [np.squeeze(rank[:,k,:,:]) for k in range(3)] # top-k labelmaps
-
 
 def seg_tests(solver, rank_format, dataset, layer, gts, n_cls):
 	print '>>>', datetime.now(), 'Begin seg tests'
