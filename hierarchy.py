@@ -1,16 +1,16 @@
 """ Returns the parent nodes of a dict-based general tree with
     root -1 and leaves None  
     Example: tree = {-1: {0: {2: {6: None}},
-	1: {3: {7: None,
-		    8: None,
-			9: None,
-			10: None,
-			11: None},
-		4: {12: None,
-			13: None},
-		5: {14: None,
-			15: None,
-			16: None}}}}
+                          1: {3: {7: None,
+                                  8: None,
+                                  9: None,
+                                  10: None,
+                                  11: None},
+                              4: {12: None,
+                                  13: None},
+                              5: {14: None,
+                                  15: None,
+                                  16: None}}}}
 """
 def get_parents(tree, idx):
     for sub in dict_generator(tree):
