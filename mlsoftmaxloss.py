@@ -33,12 +33,12 @@ class MultilabelSoftmaxWithLossLayer(caffe.Layer):
             _,_,r,c = np.where(bottom[1].data == l)
             Y[:,l,r,c] = 1
         for c in range(bottom[1].channels):
-            labelset = np.unique(bottom[1].data[:,c,:,:])
+            labelset = np.unique(bottom[1].data[:,c,:,:]).astype(int).tolist()
             scale_factor[:,labelset,:,:] = 1/(c+1)
         Y = Y.flatten().astype(int)
         exp_scores = np.exp(bottom[0].data)
         probs = (exp_scores / np.sum(exp_scores, axis=1, keepdims=True)).flatten()
-        correct = -np.log(scale_factor*probs[Y])
+        correct = -scale_factor.flatten()*np.log(probs[Y])
         self.diff = correct.reshape((bottom[0].data.shape))
         loss = np.sum(correct)/bottom[0].num
         top[0].data[...] = loss
