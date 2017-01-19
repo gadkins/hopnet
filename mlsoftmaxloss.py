@@ -1,7 +1,6 @@
 from __future__ import division
 import caffe
 import numpy as np
-import hierarchy as hier
 
 """ This Python Layer class implements the multilabel softmax loss as described in:
 
