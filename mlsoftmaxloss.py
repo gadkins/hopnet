@@ -28,7 +28,6 @@ class MultilabelSoftmaxWithLossLayer(caffe.Layer):
         Y = np.zeros_like(bottom[0].data) # a truth mask volume
         probs = np.zeros_like(bottom[0].data)
         scale_factor = np.zeros_like(bottom[0].data)
-        loss = 0.0
         for l in labels:
             _,_,r,c = np.where(bottom[1].data == l)
             Y[:,l,r,c] = 1
@@ -40,8 +39,7 @@ class MultilabelSoftmaxWithLossLayer(caffe.Layer):
         probs = (exp_scores / np.sum(exp_scores, axis=1, keepdims=True)).flatten()
         correct = -scale_factor.flatten()*np.log(probs[Y])
         self.diff = correct.reshape((bottom[0].data.shape))
-        loss = np.sum(correct)/bottom[0].num
-        top[0].data[...] = loss
+        top[0].data[...] = np.sum(correct)/bottom[0].num # loss
 
     def backward (self, top, propagate_down, bottom):
         for i in range(2):
