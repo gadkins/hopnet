@@ -6,7 +6,10 @@ import numpy as np
 
         Yunchao Gong, Yangqing Jia, Thomas Leung, Alexander Toshev, Sergey Ioffe: 
         Deep Convolutional Ranking for Multilabel Image Annotation. CVPR, 2014.
-
+        
+        Specifically, the modification involves setting the scale factor to be 
+        the sample's depth in a class hierarchy tree.
+        See graysonadkins.com/research for details.
 """
 class MultilabelSoftmaxWithLossLayer(caffe.Layer):
 
@@ -24,16 +27,15 @@ class MultilabelSoftmaxWithLossLayer(caffe.Layer):
 
     def forward(self, bottom, top):	
         labels = np.unique(bottom[1].data).astype(int).tolist()
-        Y = np.zeros_like(bottom[0].data) # a truth mask volume
-        probs = np.zeros_like(bottom[0].data)
+        Y = np.zeros((bottom[0].data.shape), dtype=int) # a truth mask volume
         scale_factor = np.zeros_like(bottom[0].data)
         for l in labels:
             _,_,r,c = np.where(bottom[1].data == l)
             Y[:,l,r,c] = 1
+        Y = Y.flatten()
         for c in range(bottom[1].channels):
             labelset = np.unique(bottom[1].data[:,c,:,:]).astype(int).tolist()
             scale_factor[:,labelset,:,:] = 1/(c+1)
-        Y = Y.flatten().astype(int)
         exp_scores = np.exp(bottom[0].data)
         probs = (exp_scores / np.sum(exp_scores, axis=1, keepdims=True)).flatten()
         correct = -scale_factor.flatten()*np.log(probs[Y])
