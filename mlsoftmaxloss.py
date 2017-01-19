@@ -5,8 +5,8 @@ import hierarchy as hier
 
 """ This Python Layer class implements the multilabel softmax loss as described in:
 
-		Yunchao Gong, Yangqing Jia, Thomas Leung, Alexander Toshev, Sergey Ioffe: 
-		Deep Convolutional Ranking for Multilabel Image Annotation. CVPR, 2014.
+        Yunchao Gong, Yangqing Jia, Thomas Leung, Alexander Toshev, Sergey Ioffe: 
+        Deep Convolutional Ranking for Multilabel Image Annotation. CVPR, 2014.
 
 """
 class MultilabelSoftmaxWithLossLayer(caffe.Layer):
