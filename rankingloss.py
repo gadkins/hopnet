@@ -43,10 +43,9 @@ class RankingLossLayer(caffe.Layer):
 			scores_k = scores_k[:,:,r,c]
 			margins = scale_factor[:,j,r,c]*np.maximum(0, 1 - scores_j + scores_k)
 			loss += np.sum(margins)
-			missed_margins[:,j,r,c] = -(margins > 0).astype(int).sum(1) # true class gradients
+			self.diff[:,j,r,c] = -(margins > 0).astype(int).sum(1) # true class gradients
 			for idx,k in enumerate(K):
-				missed_margins[:,k,r,c] += (margins[:,idx,:] > 0).astype(int) # other gradients
-		self.diff[...] = missed_margins
+				self.diff[:,k,r,c] += (margins[:,idx,:] > 0).astype(int) # other gradients
 		top[0].data[...] = loss
 
 
