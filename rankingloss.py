@@ -47,7 +47,6 @@ class RankingLossLayer(caffe.Layer):
 				self.diff[:,k,r,c] += (margins[:,idx,:] > 0).astype(int) # other gradients
 		top[0].data[...] = loss
 
-
 	def backward (self, top, propagate_down, bottom):
 		for i in range(2):
 			if not propagate_down[i]:
