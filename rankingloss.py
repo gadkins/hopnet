@@ -25,7 +25,6 @@ class RankingLossLayer(caffe.Layer):
 		top[0].reshape(1)
 
 	def forward(self, bottom, top):
-		
 		self.labels = np.unique(bottom[1].data).astype(int).tolist()
 		scale_factor = np.zeros_like(bottom[0].data)
 		missed_margins = np.zeros_like(bottom[0].data)
