@@ -1,30 +1,30 @@
 from __future__ import division
 
 person_tree = {-1: {0: {2: {9: None}},
-					1: {3: {10: None,
-							11: None,
-							12: None,
-							13: None,
-							14: None,
-							15: None,
-							16: None,
-							17: None,
-							18: None,
-							19: None},
-						4: {20: None,
-						 	21: None},
-						5: {22: None,
-							23: None,
-							24: None},
-						6: {25: None,
-							26: None,
-							27: None},
-						7: {28: None,
-							29: None,
-							30: None},
-						8: {31: None,
-							32: None,
-							33: None}}}}
+                    1: {3: {10: None,
+                            11: None,
+                            12: None,
+                            13: None,
+                            14: None,
+                            15: None,
+                            16: None,
+                            17: None,
+                            18: None,
+                            19: None},
+                        4: {20: None,
+                            21: None},
+                        5: {22: None,
+                            23: None,
+                            24: None},
+                        6: {25: None,
+                            26: None,
+                            27: None},
+                        7: {28: None,
+                            29: None,
+                            30: None},
+                        8: {31: None,
+                            32: None,
+                            33: None}}}}
 
 def dict_generator(indict, pre=None):
     pre = pre[:] if pre else []
@@ -63,7 +63,7 @@ def get_family(key, tree=person_tree):
 def get_depth(key, tree=person_tree):
 	return len(get_parents(tree, key)) + 1
 
-# Weighted Approximate Ranking (WARP)
+# Weighted Approximate Ranking (WARP) scale factor
 def warp(key, tree=person_tree):
 	if isinstance(keys, list):
 		return [(k, 1/get_depth(tree, k)) for k in keys]
