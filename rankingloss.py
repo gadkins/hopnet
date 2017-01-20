@@ -3,11 +3,11 @@ import numpy as np
 import hierarchy as hier
 
 """ 
-	This Python Layer class implements the Weighted Approximate Ranking (WARP) 
-	loss function as described in:
+    This Python Layer class implements the Weighted Approximate Ranking (WARP) 
+    loss function as described in:
 
-		Yunchao Gong, Yangqing Jia, Thomas Leung, Alexander Toshev, Sergey Ioffe: 
-		Deep Convolutional Ranking for Multilabel Image Annotation. CVPR, 2014. 
+        Yunchao Gong, Yangqing Jia, Thomas Leung, Alexander Toshev, Sergey Ioffe: 
+        Deep Convolutional Ranking for Multilabel Image Annotation. CVPR, 2014. 
 
 """
 class RankingLossLayer(caffe.Layer):
