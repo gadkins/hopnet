@@ -26,6 +26,9 @@ person_tree = {-1: {0: {2: {9: None}},
                             32: None,
                             33: None}}}}
 
+""" Credit for the following function belongs to Valentin Bryukhanov
+    from stackoverflow.com article: 'Python: Recommended way to walk 
+    complex dictionary structures imported from JSON?' """
 def dict_generator(indict, pre=None):
     pre = pre[:] if pre else []
     if isinstance(indict, dict):
@@ -42,6 +45,8 @@ def dict_generator(indict, pre=None):
     else:
         yield indict
 
+""" Returns the parent nodes of a dict-based general tree with
+    root -1 and leaves None  """
 def get_parents(key, tree=person_tree):
 	for sub in dict_generator(tree):
 		if key in sub:
