@@ -1,3 +1,5 @@
+""" Helper functions for HOPNet """
+
 from __future__ import division
 
 person_tree = {-1: {0: {2: {9: None}},
